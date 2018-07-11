@@ -306,6 +306,7 @@ class ActivityLog extends Component {
 	getActivityLog() {
 		const {
 			enableRewind,
+			filter,
 			filter: { page: requestedPage },
 			logs,
 			logLoadingState,
@@ -415,7 +416,7 @@ class ActivityLog extends Component {
 					noLogsContent
 				) : (
 					<div>
-						<ActivityLogSearch />
+						<ActivityLogSearch filter={ filter } />
 						<section className="activity-log__wrapper">
 							{ theseLogs.map( log => (
 								<Fragment key={ log.activityId }>

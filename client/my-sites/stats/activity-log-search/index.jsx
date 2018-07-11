@@ -7,22 +7,18 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { localize } from 'i18n-calypso';
-import { noop } from 'lodash';
+import { omit, isEmpty } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import Search from 'components/search';
 import Gridicon from 'gridicons';
+import ActivityLogSearchTokens from './activity-log-search-tokens';
 
 class ActivityLogSearch extends Component {
 	static propTypes = {
-		onSearch: PropTypes.func,
 		translate: PropTypes.func.isRequired,
-	};
-
-	static defaultProps = {
-		onSearch: noop,
+		filter: PropTypes.object.isRequired,
 	};
 
 	filters = [
@@ -32,52 +28,32 @@ class ActivityLogSearch extends Component {
 			icon: 'types',
 		},
 		{
-			key: 'user',
-			label: 'User',
-			icon: 'user',
-		},
-		{
 			key: 'time',
 			label: 'Time',
 			icon: 'time',
 		},
-		{
-			key: 'post',
-			label: 'Post',
-			icon: 'posts',
-		},
 	];
 
-	renderFilter = filter => {
-		return (
-			<div className="activity-log-search__filter" key={ filter.key }>
-				<Gridicon
-					icon={ filter.icon || 'cog' }
-					className="activity-log-search__filter-icon"
-					size={ 18 }
-				/>
-				{ filter.label }
-			</div>
-		);
-	};
-
-	renderFilters = () => {
-		return this.filters.map( filter => this.renderFilter( filter ) );
-	};
+	hasTokens() {
+		return ! isEmpty( omit( this.props.filter, 'page' ) );
+	}
 
 	render() {
-		const { translate } = this.props;
+		const { translate, filter } = this.props;
 
 		return (
 			<section className="activity-log-search">
-				<Search
-					onSearch={ this.props.onSearch }
-					placeholder={ translate( 'Search activities on your site' ) }
-					analyticsGroup="ActivityLog"
-				/>
+				{ this.hasTokens() && <ActivityLogSearchTokens filter={ filter } /> }
 				<div className="activity-log-search__filters">
 					<div className="activity-log-search__filters-header">{ translate( 'Search by' ) }</div>
-					<div className="activity-log-search__filters-categories">{ this.renderFilters() }</div>
+					<div className="activity-log-search__filters-categories">
+						{ this.filters.map( ( { icon, key, label } ) => (
+							<div className="activity-log-search__filter" key={ key }>
+								<Gridicon icon={ icon } className="activity-log-search__filter-icon" size={ 18 } />
+								{ label }
+							</div>
+						) ) }
+					</div>
 				</div>
 			</section>
 		);
